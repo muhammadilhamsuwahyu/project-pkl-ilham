@@ -1,39 +1,49 @@
 <?= $this->extend('layout/page_layout') ?>
-<?= $this->section('sidebar_menu')?>
+
+<?= $this->section('css'); ?>
+    <!-- DataTables -->
+    <link rel="stylesheet" href="<?=base_url('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
+    <link rel="stylesheet" href="<?=base_url('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
+    <link rel="stylesheet" href="<?=base_url('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="<?=base_url('assets/plugins/daterangepicker/daterangepicker.css')?>">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="<?=base_url('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')?>">
+
     <style>
         i.text-hover:hover {
             opacity: 80%;
         }
     </style>
+<?= $this->endSection(); ?>
+
+<?= $this->section('sidebar_menu') ?>
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
             <li class="nav-item">
-                <a href="<?=site_url('Home')?>" class="nav-link ">
+                <a href="<?= site_url('Home') ?>" class="nav-link ">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>Dashboard</p>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a href="<?=site_url('Input')?>" class="nav-link ">
+                <a href="<?= site_url('Input') ?>" class="nav-link ">
                     <i class="nav-icon fas fa-edit"></i>
-                    <p>
-                        Input
-                    </p>
+                    <p>Input</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?=site_url('Search')?>" class="nav-link active">
+                <a href="<?= site_url('Search') ?>" class="nav-link active">
                     <i class="nav-icon fas fa-search"></i>
-                    <p>
-                        Pencarian
-                    </p>
+                    <p>Pencarian</p>
                 </a>
             </li>
         </ul>
     </nav>
 <?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -46,7 +56,7 @@
                     <!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                            <li class="breadcrumb-item">Home</li>
                             <li class="breadcrumb-item active">Pencarian</li>
                         </ol>
                     </div>
@@ -63,13 +73,14 @@
             <div class="container-fluid">
                 <!-- general form elements -->
                 <div class="card card-body card-primary">
-                    <form class="row">
+                    <div class="row">
                         <div class="form-group col-md-6">
-                            <label for="perizinan">Jenis Perizinan</label>
-                            <select class="custom-select rounded-0" id="perizinan">
-                            <?php foreach($izin as $keyizin) :?>
-                                <option value="<?= $keyizin['id_jenis_perizinan']?>"><?= $keyizin['nama_perizinan']?></option>
-                            <?php endforeach;?>
+                            <label for="jenis_perizinan">Jenis Perizinan</label>
+                            <select name="jenisperizinan" class="custom-select rounded-0" id="jenis_perizinan">
+                                <option value="none">None</option>
+                                <?php foreach ($izin as $keyizin) : ?>
+                                    <option value="<?= $keyizin['id_jenis_perizinan'] ?>"><?= $keyizin['nama_perizinan'] ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <!-- Date range -->
@@ -81,161 +92,78 @@
                                     <i class="far fa-calendar-alt"></i>
                                     </span>
                                 </div>
-                                <input type="text" class="form-control float-right" id="reservation">
+                                <input type="text" class="form-control float-right" id="daterange" name="daterange" pattern="[0-9]{4}/[0-9]{2}/[0-9]{2} - [0-9]{4}/[0-9]{2}/[0-9]{2}" placeholder="yyyy/mm/dd - yyyy/mm/dd">
                             </div>
-                            <!-- /.input group -->
                         </div>
-                        <!-- /.form group -->  
+                        <!-- /.input group -->
                         <div class="col">
-                            <input type="submit" class="btn btn-primary mr-1" value="Proses">
-                            <input type="submit" class="btn btn-danger" value="Cetak">
+                            <button id="search-button" class="btn btn-primary">Proses <span class="load spinner-border spinner-border-sm text-light ml-1" style="display: none;" id="spinner"></span></button>
                         </div>
-                    </form>
+                    </div>
+                    <!-- /.form group -->
                 </div>
                 <!-- /.card-body -->
                 <!-- Tabel -->
-                <div class="card">
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped table-responsive">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th class="text-center" rowspan="1" colspan="1">No. Registrasi</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Tanggal</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Nama Lengkap</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Alamat</th>
-                                    <th class="text-center" rowspan="1" colspan="1">No. HP</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Nama Perusahaan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Lokasi Usaha</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Kelurahan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Kecamatan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">No. Izin</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Tanggal Terbit</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Jenis Perizinan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach($dataperizinan as $perizinan):?>
-                                <tr>
-                                    <td><?= $perizinan['NO_REGISTER']?></td>
-                                    <td><?= $perizinan['TANGGAL']?></td>
-                                    <td><?= $perizinan['NAMA']?></td>
-                                    <td><?= $perizinan['ALAMAT']?></td>
-                                    <td><?= $perizinan['NO_HP']?></td>
-                                    <td><?= $perizinan['PERUSAHAAN']?></td>
-                                    <td><?= $perizinan['LOKASI_USAHA']?></td>
-                                    <td><?= $perizinan['Kelurahan']?></td>
-                                    <td><?= $perizinan['Kecamatan']?></td>
-                                    <td><?= $perizinan['NO_IZIN']?></td>
-                                    <td><?= $perizinan['TANGGAL_TERBIT']?></td>
-                                    <td><?= $perizinan['nama_perizinan']?></td>
-                                    <td class="h5" style="line-height: 20pt;"><a href="/Search/edit/<?= base64_encode($perizinan['NO_REGISTER']); ?>")>
-                                        <i class="text-hover text-primary fas fa-pen"></i></a> | <a href="/Search/delete/<?= base64_encode($perizinan['NO_REGISTER']); ?>" onclick="confirm('Apakah Anda yakin ingin menghapus data perizinan dengan No. Register <?= $perizinan['NO_REGISTER']; ?>')"><i class="text-hover text-danger  fas fa-trash"></a></i>
-                                    </td>
-                                </tr>
-                                <?php endforeach?>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th class="text-center" rowspan="1" colspan="1">No. Registrasi</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Tanggal</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Nama Lengkap</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Alamat</th>
-                                    <th class="text-center" rowspan="1" colspan="1">No. HP</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Nama Perusahaan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Lokasi Usaha</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Kelurahan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Kecamatan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">No. Izin</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Tanggal Terbit</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Jenis Perizinan</th>
-                                    <th class="text-center" rowspan="1" colspan="1">Action</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
+                <div id="tabelout"></div>
             </div>
-
             <!-- /.container-fluid -->
         </section>
-    <!-- /.content -->
+        <!-- /.content -->
     </div>
 <?= $this->endSection() ?>
+
 <?= $this->section('script') ?>
+    <!-- DataTables  & Plugins -->
+    <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-buttons/js/dataTables.buttons.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/jszip/jszip.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/pdfmake/pdfmake.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/pdfmake/vfs_fonts.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-buttons/js/buttons.html5.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-buttons/js/buttons.print.min.js')?>"></script>
+    <script src="<?= base_url('assets/plugins/datatables-buttons/js/buttons.colVis.min.js')?>"></script>
+    <!-- daterangepicker -->
+    <script src="<?= base_url('assets/plugins/moment/moment.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/plugins/daterangepicker/daterangepicker.js'); ?>"></script>
+    <!-- InputMask -->
+    <script src="<?= base_url('assets/plugins/inputmask/jquery.inputmask.min.js'); ?>"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="<?= base_url('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')?>"></script>
+
     <script>
-        $(function () {      
-            //Datemask dd/mm/yyyy
-            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
-            //Datemask2 mm/dd/yyyy
-            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
-            //Money Euro
-            $('[data-mask]').inputmask()
-        
-            //Date picker
-            $('#tanggal_register').datetimepicker({
-                format: 'L'
-            });
-            $('#tanggal_terbit').datetimepicker({
-                format: 'L'
-            });
-      
-            //Date and time picker
-            $('#reservationdatetime').datetimepicker({ icons: { time: 'far fa-clock' } });
-        
+        // load DataTable
+        let tabel = "<?= site_url('Search/getData/none');?>";
+        $('#tabelout').load(tabel);
+        $(function () {
             //Date range picker
-            $('#reservation').daterangepicker()
-            //Date range picker with time picker
-            $('#reservationtime').daterangepicker({
-                timePicker: true,
-                timePickerIncrement: 30,
+            $('#daterange').daterangepicker({
+                autoUpdateInput: false,
                 locale: {
-                format: 'MM/DD/YYYY hh:mm A'
+                    CancelLabel: 'Clear',
+                    format: 'YYYY/MM/DD'
                 }
             })
-            //Date range as a button
-            $('#daterange-btn').daterangepicker(
-                {
-                ranges   : {
-                    'Today'       : [moment(), moment()],
-                    'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month'  : [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                },
-                startDate: moment().subtract(29, 'days'),
-                endDate  : moment()
-                },
-                function (start, end) {
-                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
-                }
-            )
-        
-            //Timepicker
-            $('#timepicker').datetimepicker({
-                format: 'LT'
-            })      
-          
-            // Script untuk pencarian
-            $(function () {
-                $("#example1").DataTable({
-                "responsive": true, "lengthChange": false, "autoWidth": false,
-                "buttons": ["excel"]
-                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                $('#example2').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
+            $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
+            });
+
+            $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            // load DataTable
+            $("#search-button").click(function (){
+                $('#spinner').show();
+                jenis = $('#jenis_perizinan').val();
+                tanggal = $('#daterange').val();
+                let tabel = "<?= site_url('Search/getData');?>/"+jenis+'/'+btoa(tanggal);
+                $('#tabelout').load(tabel, function() {
+                    $('#spinner').hide();
                 });
             });
         })
-
     </script>
 <?= $this->endSection() ?>
